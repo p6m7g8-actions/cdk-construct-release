@@ -1,0 +1,70 @@
+name: "Release Composite Action"
+description: "P6 Action: Release a CDK Construct"
+author: "p6m7g8"
+inputs:
+  aws_region:
+    description: "AWS region for deployment"
+    required: false
+    default: "us-east-1"
+  aws_role:
+    description: "AWS role to assume"
+    required: true
+  aws_session_name:
+    description: "Session name for the AWS role"
+    required: true
+  cdk_deploy_account:
+    description: "AWS CDK deploy account"
+    required: true
+  cdk_deploy_region:
+    description: "AWS CDK deploy region"
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout code
+      if: ${{ !contains(github.event.head_commit.message, 'chore(release):') }}
+      uses: actions/checkout@v4.2.2
+      with:
+        fetch-depth: 0
+    - name: Bump Version
+      if: ${{ !contains(github.event.head_commit.message, 'chore(release):') }}
+      shell: bash
+      run: |
+        latest_tag=$(git tag --list "v*" --sort=-v:refname | head -1)
+        log_lines=$(git log $latest_tag..HEAD --pretty="format:- %s")
+        major=$(echo $latest_tag | cut -d. -f1)
+        minor=$(echo $latest_tag | cut -d. -f2)
+        patch=$(echo $latest_tag | cut -d. -f3)
+
+        if echo "$log_lines" | grep -q "BREAKING CHANGE"; then
+          major=$((major + 1))
+          minor=0
+          patch=0
+        elif echo "$log_lines" | grep -q "major"; then
+          major=$((major + 1))
+          minor=0
+          patch=0
+        elif echo "$log_lines" | grep -q "feat"; then
+          minor=$((minor + 1))
+          patch=0
+        elif echo "$log_lines" | grep -q "fix"; then
+          patch=$((patch + 1))
+        elif echo "$log_lines" | grep -q "chore"; then
+          patch=$((patch + 1))
+        else
+          true
+        fi
+
+        new_tag="$major.$minor.$patch"
+        npm version $new_tag --no-git-tag-version
+        mkdir -p dist/
+        echo $new_tag >dist/releasetag.txt
+        echo "$log_lines" | grep -v "chore(release):" >dist/changelog.md
+        echo "Semantic version tag: $latest_tag -> $new_tag"
+        cat dist/changelog.md
+
+        if grep -E "^- (chore|fix|feat|major)\!*" dist/changelog.md; then
+          echo "bump=true" >> $GITHUB_OUTPUT
+        else
+          echo "bump=false" >> $GITHUB_OUTPUT
+        fi
