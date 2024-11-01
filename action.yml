@@ -31,7 +31,7 @@ inputs:
     description: "Nugget API key"
     required: true
   go_github_token:
-    description: "GoThub token"
+    description: "Go Github token"
     required: true
   p6_a_gh_token:
     description: "GitHub token"
@@ -106,7 +106,7 @@ runs:
         fi
     - name: CDK Build
       if: ${{ steps.bump.outputs.bump == 'true' }}
-      uses: p6m7g8-actions/cdk-build-construct@main
+      uses: p6m7g8-actions/cdk-construct-build@main
       with:
         aws_region: ${{ inputs.cdk_deploy_region }}
         aws_role: ${{ inputs.aws_role }}
