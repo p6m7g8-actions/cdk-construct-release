@@ -114,7 +114,7 @@ runs:
         cdk_deploy_account: ${{ inputs.cdk_deploy_account }}
         cdk_deploy_region: ${{ inputs.cdk_deploy_region }}
     - name: Publish to NPM
-      if: ${{ steps.bump.outputs.bump == 'true' }} && contains(github.event.head_commit.message, 'chore(release):')
+      if: ${{ steps.bump.outputs.bump == 'true' }} && !contains(github.event.head_commit.message, 'chore(release):')
       shell: bash
       env:
         NPM_TOKEN: ${{ inputs.npm_token }}
@@ -123,17 +123,17 @@ runs:
       env:
         TWINE_USERNAME: ${{ inputs.twine_username }}
         TWINE_PASSWORD: ${{ inputs.twine_password }}
-      if: ${{ steps.bump.outputs.bump == 'true' }} && contains(github.event.head_commit.message, 'chore(release):')
+      if: ${{ steps.bump.outputs.bump == 'true' }} && !contains(github.event.head_commit.message, 'chore(release):')
       shell: bash
       run: yarn run publish:pypi
     - name: Publish to Nuget
       env:
         NUGET_API_KEY: ${{ inputs.nuget_api_key }}
-      if: ${{ steps.bump.outputs.bump == 'true' }} && contains(github.event.head_commit.message, 'chore(release):')
+      if: ${{ steps.bump.outputs.bump == 'true' }} && !contains(github.event.head_commit.message, 'chore(release):')
       shell: bash
       run: yarn run publish:nuget
     - name: Publish to GoLang
-      if: ${{ steps.bump.outputs.bump == 'true' }} && contains(github.event.head_commit.message, 'chore(release):')
+      if: ${{ steps.bump.outputs.bump == 'true' }} && !contains(github.event.head_commit.message, 'chore(release):')
       shell: bash
       env:
         GIT_USER_NAME: ${{ github.actor }}
