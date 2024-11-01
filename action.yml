@@ -144,7 +144,7 @@ runs:
           echo "bump=false" >> $GITHUB_OUTPUT
         fi
     - name: Github Release
-      if: ${{ steps.bump.outputs.bump == 'true' }} && !contains(github.event.head_commit.message, 'chore(release):')
+      if: ${{ steps.bump.outputs.bump == 'true' && !contains(github.event.head_commit.message, 'chore(release):') }}
       shell: bash
       env:
         GITHUB_TOKEN: ${{ inputs.p6_a_gh_token }}
@@ -160,14 +160,14 @@ runs:
           echo "Release with tag $tag_name created successfully."
         fi
     - name: Assume role using OIDC
-      if: ${{ steps.bump.outputs.bump == 'true' }} && !contains(github.event.head_commit.message, 'chore(release):')
+      if: ${{ steps.bump.outputs.bump == 'true' && !contains(github.event.head_commit.message, 'chore(release):') }}
       uses: aws-actions/configure-aws-credentials@v4.0.2
       with:
         aws-region: ${{ inputs.aws_region }}
         role-to-assume: ${{ inputs.aws_role }}
         role-session-name: ${{ inputs.aws_session_name }}
     - name: Run build
-      if: ${{ steps.bump.outputs.bump == 'true' }} && !contains(github.event.head_commit.message, 'chore(release):')
+      if: ${{ steps.bump.outputs.bump == 'true' && !contains(github.event.head_commit.message, 'chore(release):') }}
       shell: bash
       env:
         CDK_DEPLOY_ACCOUNT: ${{ inputs.cdk_deploy_account }}
@@ -177,30 +177,30 @@ runs:
         AWS_REGION: ${{ inputs.aws_region }}
       run: yarn run ci:gha
     - name: Run Package
-      if: ${{ steps.bump.outputs.bump == 'true' }} && !contains(github.event.head_commit.message, 'chore(release):')
+      if: ${{ steps.bump.outputs.bump == 'true' && !contains(github.event.head_commit.message, 'chore(release):') }}
       shell: bash
       run: yarn run jsii:pacmak:parallel
     - name: Publish to NPM
-      if: ${{ steps.bump.outputs.bump == 'true' }} && !contains(github.event.head_commit.message, 'chore(release):')
+      if: ${{ steps.bump.outputs.bump == 'true' && !contains(github.event.head_commit.message, 'chore(release):') }}
       shell: bash
       env:
         NPM_TOKEN: ${{ inputs.npm_token }}
       run: yarn run publish:npm
     - name: Publish to PYPI
+      if: ${{ steps.bump.outputs.bump == 'true' && !contains(github.event.head_commit.message, 'chore(release):') }}
       env:
         TWINE_USERNAME: ${{ inputs.twine_username }}
         TWINE_PASSWORD: ${{ inputs.twine_password }}
-      if: ${{ steps.bump.outputs.bump == 'true' }} && !contains(github.event.head_commit.message, 'chore(release):')
       shell: bash
       run: yarn run publish:pypi
     - name: Publish to Nuget
+      if: ${{ steps.bump.outputs.bump == 'true' && !contains(github.event.head_commit.message, 'chore(release):') }}
       env:
         NUGET_API_KEY: ${{ inputs.nuget_api_key }}
-      if: ${{ steps.bump.outputs.bump == 'true' }} && !contains(github.event.head_commit.message, 'chore(release):')
       shell: bash
       run: yarn run publish:nuget
     - name: Publish to GoLang
-      if: ${{ steps.bump.outputs.bump == 'true' }} && !contains(github.event.head_commit.message, 'chore(release):')
+      if: ${{ steps.bump.outputs.bump == 'true' && !contains(github.event.head_commit.message, 'chore(release):') }}
       shell: bash
       env:
         GIT_USER_NAME: ${{ github.actor }}
