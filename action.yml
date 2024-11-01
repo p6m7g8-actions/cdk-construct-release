@@ -44,6 +44,57 @@ runs:
       uses: actions/checkout@v4.2.2
       with:
         fetch-depth: 0
+    - name: Install Node.js
+      if: ${{ !contains(github.event.head_commit.message, 'chore(release):') }}
+      shell: bash
+      run: |
+        curl -fsSL https://nodejs.org/dist/v22.11.0/node-v22.11.0-linux-x64.tar.xz -o node-v22.11.0-linux-x64.tar.xz
+        sudo tar -xJf node-v22.11.0-linux-x64.tar.xz -C /usr/local
+        echo "/usr/local/node-v22.11.0-linux-x64/bin" >> $GITHUB_PATH
+    - name: Restore NPM node_modules cache
+      if: ${{ !contains(github.event.head_commit.message, 'chore(release):') }}
+      uses: actions/cache/restore@v4.1.2
+      with:
+        path: node_modules
+        key: ${{ runner.os }}-yarn-node_modules-${{ hashFiles('yarn.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-yarn-node_modules-
+    - name: Corepack
+      if: ${{ !contains(github.event.head_commit.message, 'chore(release):') }}
+      shell: bash
+      run: |
+        set +e
+        sudo corepack enable
+        sudo corepack prepare yarn@latest --activate
+    - name: Check Node
+      if: ${{ !contains(github.event.head_commit.message, 'chore(release):') }}
+      shell: bash
+      run: |
+        set +e
+        ls -alFh /usr/local/node-v22.11.0-linux-x64/bin
+        which node
+        which npm
+        which yarn
+        which corepack
+        node -v
+        npm -v
+        yarn --version
+        corepack --version
+        echo $PATH
+    - name: Install node_modules
+      if: ${{ !contains(github.event.head_commit.message, 'chore(release):') }}
+      shell: bash
+      run: |
+        yarn install
+        yarn explain peer-requirements
+    - name: Cache NPM dependencies
+      if: ${{ !contains(github.event.head_commit.message, 'chore(release):') }}
+      uses: actions/cache@v4.1.2
+      with:
+        path: node_modules
+        key: ${{ runner.os }}-yarn-node_modules-${{ hashFiles('yarn.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-yarn-node_modules-
     - name: Bump Version
       id: bump
       if: ${{ !contains(github.event.head_commit.message, 'chore(release):') }}
@@ -89,7 +140,7 @@ runs:
           echo "bump=false" >> $GITHUB_OUTPUT
         fi
     - name: Github Release
-      if: ${{ steps.bump.outputs.bump == 'true' }}
+      if: ${{ steps.bump.outputs.bump == 'true' }} && !contains(github.event.head_commit.message, 'chore(release):')
       shell: bash
       env:
         GITHUB_TOKEN: ${{ inputs.p6_a_gh_token }}
@@ -104,15 +155,27 @@ runs:
           gh release create "$tag_name" -R "$GITHUB_REPOSITORY" -F dist/changelog.md -t "$tag_name" --target "$GITHUB_REF"
           echo "Release with tag $tag_name created successfully."
         fi
-    - name: CDK Build
-      if: ${{ steps.bump.outputs.bump == 'true' }}
-      uses: p6m7g8-actions/cdk-construct-build@main
+    - name: Assume role using OIDC
+      if: ${{ steps.bump.outputs.bump == 'true' }} && !contains(github.event.head_commit.message, 'chore(release):')
+      uses: aws-actions/configure-aws-credentials@v4.0.2
       with:
-        aws_region: ${{ inputs.cdk_deploy_region }}
-        aws_role: ${{ inputs.aws_role }}
-        aws_session_name: ${{ inputs.aws_session_name }}
-        cdk_deploy_account: ${{ inputs.cdk_deploy_account }}
-        cdk_deploy_region: ${{ inputs.cdk_deploy_region }}
+        aws-region: ${{ inputs.aws_region }}
+        role-to-assume: ${{ inputs.aws_role }}
+        role-session-name: ${{ inputs.aws_session_name }}
+    - name: Run build
+      if: ${{ steps.bump.outputs.bump == 'true' }} && !contains(github.event.head_commit.message, 'chore(release):')
+      shell: bash
+      env:
+        CDK_DEPLOY_ACCOUNT: ${{ inputs.cdk_deploy_account }}
+        CDK_DEPLOY_REGION: ${{ inputs.cdk_deploy_region }}
+        CDK_DEFAULT_ACCOUNT: ${{ inputs.cdk_deploy_account }}
+        CDK_DEFAULT_REGION: ${{ inputs.cdk_deploy_region }}
+        AWS_REGION: ${{ inputs.aws_region }}
+      run: yarn run ci:gha
+    - name: Run Package
+      if: ${{ steps.bump.outputs.bump == 'true' }} && !contains(github.event.head_commit.message, 'chore(release):')
+      shell: bash
+      run: yarn run jsii:pacmak:parallel
     - name: Publish to NPM
       if: ${{ steps.bump.outputs.bump == 'true' }} && !contains(github.event.head_commit.message, 'chore(release):')
       shell: bash

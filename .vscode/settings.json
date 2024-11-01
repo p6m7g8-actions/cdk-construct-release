@@ -35,6 +35,7 @@
     "corepack",
     "elif",
     "noreply",
+    "pacmak",
     "releasetag"
   ],
   "[yaml]": {
