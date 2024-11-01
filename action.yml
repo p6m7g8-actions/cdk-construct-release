@@ -33,6 +33,9 @@ inputs:
   go_github_token:
     description: "GoThub token"
     required: true
+  p6_a_gh_token:
+    description: "GitHub token"
+    required: true
 runs:
   using: "composite"
   steps:
@@ -89,7 +92,7 @@ runs:
       if: ${{ steps.bump.outputs.bump == 'true' }}
       shell: bash
       env:
-        GITHUB_TOKEN: ${{ secrets.P6_A_GH_TOKEN }}
+        GITHUB_TOKEN: ${{ inputs.p6_a_gh_token }}
         GITHUB_REPOSITORY: ${{ github.repository }}
         GITHUB_REF: ${{ github.ref }}
       run: |
