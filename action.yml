@@ -153,7 +153,7 @@ runs:
       run: |
         set -x
         tag_name=$(cat dist/releasetag.txt)
-        if gh release view "$tag_nameE" -R "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+        if gh release view "$tag_name" -R "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
           echo "Release with tag $tag_name already exists. Skipping release creation."
         else
           gh release create "$tag_name" -R "$GITHUB_REPOSITORY" -F dist/changelog.md -t "$tag_name" --target "$GITHUB_REF"
