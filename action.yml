@@ -107,7 +107,7 @@ runs:
         set -x
         latest_tag=$(git tag --list "v*" --sort=-v:refname | head -1)
         log_lines=$(git log $latest_tag..HEAD --pretty="format:- %s")
-        major=$(echo $latest_tag | cut -d. -f1)
+        major=$(echo $latest_tag | cut -d. -f1 | sed -e 's,^v,,')
         minor=$(echo $latest_tag | cut -d. -f2)
         patch=$(echo $latest_tag | cut -d. -f3)
 
@@ -130,7 +130,7 @@ runs:
           true
         fi
 
-        new_tag="$major.$minor.$patch"
+        new_tag="v$major.$minor.$patch"
         npm version $new_tag --no-git-tag-version
         mkdir -p dist/
         echo $new_tag >dist/releasetag.txt
