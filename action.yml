@@ -47,7 +47,7 @@ runs:
     - name: Setup Python
       uses: actions/setup-python@v6.0.0
       with:
-        python-version: "3.x"
+        python-version: "3.14"
     - name: Install Node.js
       if: ${{ !contains(github.event.head_commit.message, 'chore(release):') }}
       shell: bash
@@ -57,7 +57,7 @@ runs:
         echo "/usr/local/node-v24.9.0-linux-x64/bin" >> $GITHUB_PATH
     - name: Restore NPM node_modules cache
       if: ${{ !contains(github.event.head_commit.message, 'chore(release):') }}
-      uses: actions/cache/restore@v4.2.0
+      uses: actions/cache/restore@v4.3.0
       with:
         path: node_modules
         key: ${{ runner.os }}-yarn-node_modules-${{ hashFiles('yarn.lock') }}
@@ -93,7 +93,7 @@ runs:
         yarn explain peer-requirements
     - name: Cache NPM dependencies
       if: ${{ !contains(github.event.head_commit.message, 'chore(release):') }}
-      uses: actions/cache@v4.2.0
+      uses: actions/cache@v4.3.0
       with:
         path: node_modules
         key: ${{ runner.os }}-yarn-node_modules-${{ hashFiles('yarn.lock') }}
@@ -163,7 +163,7 @@ runs:
         fi
     - name: Assume role using OIDC
       if: ${{ steps.bump.outputs.bump == 'true' && !contains(github.event.head_commit.message, 'chore(release):') }}
-      uses: aws-actions/configure-aws-credentials@v4.1.0
+      uses: aws-actions/configure-aws-credentials@v5.1.0
       with:
         aws-region: ${{ inputs.aws_region }}
         role-to-assume: ${{ inputs.aws_role }}
