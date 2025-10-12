@@ -47,7 +47,7 @@ runs:
     - name: Setup Python
       uses: actions/setup-python@v6.0.0
       with:
-        python-version: "3.14"
+        python-version: "3.13.8"
     - name: Install Node.js
       if: ${{ !contains(github.event.head_commit.message, 'chore(release):') }}
       shell: bash
