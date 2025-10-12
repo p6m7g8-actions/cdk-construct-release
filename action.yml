@@ -41,20 +41,20 @@ runs:
   steps:
     - name: Checkout code
       if: ${{ !contains(github.event.head_commit.message, 'chore(release):') }}
-      uses: actions/checkout@v4.2.2
+      uses: actions/checkout@v5.0.0
       with:
         fetch-depth: 0
     - name: Setup Python
-      uses: actions/setup-python@v5.4.0
+      uses: actions/setup-python@v6.0.0
       with:
         python-version: "3.x"
     - name: Install Node.js
       if: ${{ !contains(github.event.head_commit.message, 'chore(release):') }}
       shell: bash
       run: |
-        curl -fsSL https://nodejs.org/dist/v22.11.0/node-v22.11.0-linux-x64.tar.xz -o node-v22.11.0-linux-x64.tar.xz
-        sudo tar -xJf node-v22.11.0-linux-x64.tar.xz -C /usr/local
-        echo "/usr/local/node-v22.11.0-linux-x64/bin" >> $GITHUB_PATH
+        curl -fsSL https://nodejs.org/dist/v24.9.0/node-v24.9.0-linux-x64.tar.xz -o node-v24.9.0-linux-x64.tar.xz
+        sudo tar -xJf node-v24.9.0-linux-x64.tar.xz -C /usr/local
+        echo "/usr/local/node-v24.9.0-linux-x64/bin" >> $GITHUB_PATH
     - name: Restore NPM node_modules cache
       if: ${{ !contains(github.event.head_commit.message, 'chore(release):') }}
       uses: actions/cache/restore@v4.2.0
@@ -75,7 +75,7 @@ runs:
       shell: bash
       run: |
         set +e
-        ls -alFh /usr/local/node-v22.11.0-linux-x64/bin
+        ls -alFh /usr/local/node-v24.9.0-linux-x64/bin
         which node
         which npm
         which yarn
