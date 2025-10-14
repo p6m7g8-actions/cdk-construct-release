@@ -1,0 +1,23 @@
+# p6m7g8-actions/cdk-construct-release
+
+- [p6m7g8-actions/cdk-construct-release](#p6m7g8-actionscdk-construct-release)
+  - [Usage](#usage)
+
+## Usage
+
+```yaml
+      - name: CDK Construct Build & Release
+        uses: p6m7g8-actions/cdk-construct-release@main
+        with:
+          aws_region: ${{ secrets.CDK_DEPLOY_REGION }}
+          aws_role: ${{ secrets.AWS_ROLE }}
+          aws_session_name: ${{ secrets.AWS_SESSION_NAME }}
+          cdk_deploy_account: ${{ secrets.CDK_DEPLOY_ACCOUNT }}
+          cdk_deploy_region: ${{ secrets.CDK_DEPLOY_REGION }}
+          npm_token: ${{ secrets.NPM_TOKEN }}
+          twine_username: ${{ secrets.TWINE_USERNAME }}
+          twine_password: ${{ secrets.TWINE_PASSWORD }}
+          nuget_api_key: ${{ secrets.NUGET_API_KEY }}
+          go_github_token: ${{ secrets.GO_GITHUB_TOKEN }}
+          p6_a_gh_token: ${{ secrets.P6_A_GH_TOKEN }}
+```
