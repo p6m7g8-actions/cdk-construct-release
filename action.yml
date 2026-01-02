@@ -41,7 +41,7 @@ runs:
   steps:
     - name: Checkout code
       if: ${{ !contains(github.event.head_commit.message, 'chore(release):') }}
-      uses: actions/checkout@v5.0.0
+      uses: actions/checkout@v6.0.1
       with:
         fetch-depth: 0
     - name: Install Node.js
@@ -53,7 +53,7 @@ runs:
         echo "/usr/local/node-v24.9.0-linux-x64/bin" >> $GITHUB_PATH
     - name: Restore NPM node_modules cache
       if: ${{ !contains(github.event.head_commit.message, 'chore(release):') }}
-      uses: actions/cache/restore@v4.3.0
+      uses: actions/cache/restore@v5.0.1
       with:
         path: node_modules
         key: ${{ runner.os }}-yarn-node_modules-${{ hashFiles('yarn.lock') }}
@@ -89,7 +89,7 @@ runs:
         yarn explain peer-requirements
     - name: Cache NPM dependencies
       if: ${{ !contains(github.event.head_commit.message, 'chore(release):') }}
-      uses: actions/cache@v4.3.0
+      uses: actions/cache@v5.0.1
       with:
         path: node_modules
         key: ${{ runner.os }}-yarn-node_modules-${{ hashFiles('yarn.lock') }}
@@ -159,7 +159,7 @@ runs:
         fi
     - name: Assume role using OIDC
       if: ${{ steps.bump.outputs.bump == 'true' && !contains(github.event.head_commit.message, 'chore(release):') }}
-      uses: aws-actions/configure-aws-credentials@v5.1.0
+      uses: aws-actions/configure-aws-credentials@v5.1.1
       with:
         aws-region: ${{ inputs.aws_region }}
         role-to-assume: ${{ inputs.aws_role }}
