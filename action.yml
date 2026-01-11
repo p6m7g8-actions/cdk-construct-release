@@ -49,7 +49,7 @@ runs:
       uses: p6m7g8-actions/node-yarn-setup@main
     - name: Restore NPM node_modules cache
       if: ${{ !contains(github.event.head_commit.message, 'chore(release):') }}
-      uses: actions/cache/restore@v4.3.0
+      uses: actions/cache/restore@v5.0.1
       with:
         path: node_modules
         key: ${{ runner.os }}-yarn-node_modules-${{ hashFiles('yarn.lock') }}
@@ -85,7 +85,7 @@ runs:
         yarn explain peer-requirements
     - name: Cache NPM dependencies
       if: ${{ !contains(github.event.head_commit.message, 'chore(release):') }}
-      uses: actions/cache@v4.3.0
+      uses: actions/cache@v5.0.1
       with:
         path: node_modules
         key: ${{ runner.os }}-yarn-node_modules-${{ hashFiles('yarn.lock') }}
