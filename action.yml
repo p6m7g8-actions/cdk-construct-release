@@ -159,7 +159,7 @@ runs:
         fi
     - name: Assume role using OIDC
       if: ${{ steps.bump.outputs.bump == 'true' && !contains(github.event.head_commit.message, 'chore(release):') }}
-      uses: aws-actions/configure-aws-credentials@v5.1.0
+      uses: aws-actions/configure-aws-credentials@v5.1.1
       with:
         aws-region: ${{ inputs.aws_region }}
         role-to-assume: ${{ inputs.aws_role }}
