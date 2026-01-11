@@ -46,11 +46,7 @@ runs:
         fetch-depth: 0
     - name: Install Node.js
       if: ${{ !contains(github.event.head_commit.message, 'chore(release):') }}
-      shell: bash
-      run: |
-        curl -fsSL https://nodejs.org/dist/v24.9.0/node-v24.9.0-linux-x64.tar.xz -o node-v24.9.0-linux-x64.tar.xz
-        sudo tar -xJf node-v24.9.0-linux-x64.tar.xz -C /usr/local
-        echo "/usr/local/node-v24.9.0-linux-x64/bin" >> $GITHUB_PATH
+      uses: p6m7g8-actions/node-yarn-setup@main
     - name: Restore NPM node_modules cache
       if: ${{ !contains(github.event.head_commit.message, 'chore(release):') }}
       uses: actions/cache/restore@v4.3.0
